@@ -63,7 +63,7 @@ const recuperarPassword = async (req, res) => {
     // Validar campos vacios
     if (Object.values(req.body).includes("")) 
         return res.status(404).json({ msg: "Lo sentimos, debes llenar todos los campos" })
-    // Validar si el correo es correcto
+    //Validar si el correo existe en la base de datos
     const administradorBDD = await Administrador.findOne({ email })
     if (!administradorBDD) 
         return res.status(404).json({ msg: "Lo sentimos, el email es incorrecto" })
@@ -83,12 +83,12 @@ const comprobarTokenPasword = async (req, res) => {
     if (!req.params.token) 
         return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
 
-    // Comprobar el token
+    // Comprobar si el token es válido
     const administradorBDD = await Administrador.findOne({ token: req.params.token })
     if (administradorBDD?.token !== req.params.token) 
-        return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
+        return res.status(404).json({ msg: "Lo sentimos, el token no es válido o ha expirado" })
 
-    await administradorBDD.save();
+    await administradorBDD.save()
   
     res.status(200).json({ msg: "Token confirmado, ya puedes crear tu nuevo password" })
 }
@@ -105,7 +105,7 @@ const nuevoPassword = async (req, res) => {
 
     const AdministradorBDD = await Administrador.findOne({ token: req.params.token })
     if (AdministradorBDD?.token !== req.params.token) 
-        return res.status(404).json({ msg: "Lo sentimos, no se puede validar la cuenta" })
+        return res.status(404).json({ msg: "Lo sentimos, el token no es válido o ha expirado" })
 
     AdministradorBDD.token = null;
     AdministradorBDD.password = await AdministradorBDD.encrypPassword(password)

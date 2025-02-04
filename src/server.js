@@ -6,7 +6,7 @@ import cors from 'cors';
 // Se importan las rutas del administrador
 import routerAdministrador from './routers/administrador_routes.js'
 
-
+import routerClientes from './routers/cliente_routes.js'
 
 // Inicializaciones
 const app = express()
@@ -30,6 +30,8 @@ app.get('/',(req,res)=>{
 
 // Rutas del administrador
 app.use('/api',routerAdministrador)
+
+app.use('/api',routerClientes)
 
 
 // Rutas no encontradas

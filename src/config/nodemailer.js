@@ -13,7 +13,7 @@ let transporter = nodemailer.createTransport({
 });
 
 
-// send mail with defined transport object
+// Mandar mensaje para recueprar la contraseña
 const sendMailToRecoveryPassword = async (userMail, token) => {
     let info = await transporter.sendMail({
         from: 'sistemaGestionDj@dj.com',
@@ -34,8 +34,29 @@ const sendMailToRecoveryPassword = async (userMail, token) => {
     console.log("Mensaje enviado satisfactoriamente: ", info.messageId);
 }
 
+// Validar la cuenta del cliente
+const sendMailToCliente = async (userMail, password) => {
+    console.log("Correo a enviar: " ,userMail)
+    let info = await transporter.sendMail({
+        from: 'admin@djapp.com',
+        to: userMail,
+        subject: "Correo de Bienvenida",
+        html: `
+        <h1>¡Bienvenido a la plataforma de Edwin Dj 🎧🎶</h1>
+        <hr>
+        <p>Tu contraseña de acceso: <strong>${password}</strong></p>
+        <a href=${process.env.URL_BACKEND}cliente/login>Haz clic aquí para iniciar sesión</a>
+        <hr>
+        <footer>🎵 ¡Disfruta de la mejor música con nosotros! 🎵</footer>
+        `
+    });
+
+    console.log("Mensaje enviado satisfactoriamente: ", info.messageId);
+}
+
 
 
 export {
-    sendMailToRecoveryPassword
+    sendMailToRecoveryPassword,
+    sendMailToCliente
 }
