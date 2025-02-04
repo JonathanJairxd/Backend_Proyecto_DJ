@@ -1,4 +1,4 @@
-//opcional
+//opcional para agregar la informacion cuando el admin ingrese por primera vez
 import { check, validationResult } from 'express-validator'
 
 export const validacionAdministrador = [
