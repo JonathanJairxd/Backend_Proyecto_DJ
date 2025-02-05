@@ -8,6 +8,9 @@ import routerAdministrador from './routers/administrador_routes.js'
 
 import routerClientes from './routers/cliente_routes.js'
 
+import routerProducto from './routers/producto_routes.js'
+
+
 // Inicializaciones
 const app = express()
 dotenv.config()
@@ -28,10 +31,14 @@ app.get('/',(req,res)=>{
     res.send("Server on")
 })
 
-// Rutas del administrador
+// Ruta del administrador
 app.use('/api',routerAdministrador)
 
+// Ruta del cliente
 app.use('/api',routerClientes)
+
+// Ruta del producto
+app.use('/api',routerProducto)
 
 
 // Rutas no encontradas
