@@ -1,4 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import bcrypt from "bcryptjs"
 
 const clienteSchema = new Schema({
@@ -32,19 +32,8 @@ const clienteSchema = new Schema({
         required: true,
         trim: true
     },
-    // Para realizar compras, si el cliente tiene un carrito o historial de pedidos
-    historialCompras: [{
-        tipoDisco: String, // Ejemplo: "Vinilo LP"
-        cantidad: Number,
-        precioUnitario: Number,
-        fechaCompra: { type: Date, default: Date.now }
-    }],
-    // Para gestionar la reserva de eventos
-    reservasEventos: [{
-        eventoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Evento' }, // Relacionado a un modelo de "Evento"
-        fechaReserva: { type: Date, default: Date.now },
-        estado: { type: String, enum: ['pendiente', 'confirmado', 'cancelado'], default: 'pendiente' }
-    }],
+    // En este apartado se puede agregar historial de compras
+    // Y asi mismo un aprtado para la gestion de reservas de eventos
     status: {
         type: Boolean,
         default: true
