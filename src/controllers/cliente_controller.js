@@ -35,7 +35,7 @@ const registrarCliente = async (req, res) => {
 }
 
 const loginCliente = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
     // Verificar que todos los campos estén llenos
     if (Object.values(req.body).includes("")) 
@@ -45,7 +45,7 @@ const loginCliente = async (req, res) => {
     // Buscar al cliente en la base de datos
     const clienteBDD = await Cliente.findOne({ email });
     if (!clienteBDD) {
-        return res.status(404).json({ msg: "Lo sentimos, el cliente no se encuentra registrado" })
+        return res.status(404).json({ msg: "Lo sentimos, el email no se encuentra registrado" })
     }
 
     // Verificar si el password es correcto
@@ -56,8 +56,6 @@ const loginCliente = async (req, res) => {
 
     // Generar token JWT
     const token = generarJWT(clienteBDD._id, "Cliente")
-
-    console.log("Token generado con rol:", token);
     
     // Extraer datos del cliente
     const { nombre, telefono, direccion, ciudad, _id } = clienteBDD;
@@ -70,7 +68,8 @@ const loginCliente = async (req, res) => {
         telefono,
         direccion,
         ciudad,
-        _id
+        _id,
+        email: clienteBDD.email
     });
 }
 
@@ -85,6 +84,7 @@ const perfilCliente = (req, res) => {
 
     res.status(200).json(req.clienteBDD)
 }
+
 const listarClientes = async (req, res) => {
     try {
         const clientes = await Cliente.find({ estado: true }).select("-createdAt -updatedAt -__v -password")
@@ -107,21 +107,6 @@ const detalleCliente = async(req,res)=>{
     res.status(200).json(cliente)
 }
 
-const actualizarCliente = async(req,res)=>{
-    const {id} = req.params
-    
-    if (Object.values(req.body).includes("")) 
-        return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
-    
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(404).json({ msg: `Lo sentimos, no existe el cliente con ID: ${id}` })
-    }
-    
-    await Cliente.findByIdAndUpdate(id, req.body)
-    
-    res.status(200).json({msg:"Actualización exitosa del paciente"})
-}
-
 const eliminarCliente = async (req,res)=>{
     const {id} = req.params
 
@@ -134,11 +119,46 @@ const eliminarCliente = async (req,res)=>{
     
     await Cliente.findByIdAndUpdate(id, { estado: false })
     
-    res.status(200).json({ msg: "Cliente eliminado exitosamente" })
+    res.status(200).json({ msg: "Cuenta eliminada exitosamente" })
+}
+
+// Actualizar 
+const actualizarCliente = async(req,res)=>{
+    const {id} = req.params
+    
+    if (Object.values(req.body).includes("")) 
+        return res.status(400).json({msg:"Lo sentimos, debes llenar todos los campos"})
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ msg: `Lo sentimos, no existe el cliente con ID: ${id}` })
+    }
+    
+    await Cliente.findByIdAndUpdate(id, req.body)
+    
+    res.status(200).json({msg:"Actualización exitosa"})
+}
+
+const actualizarPassword = async (req, res) => {
+    const clienteBDD = await Cliente.findById(req.clienteBDD._id)
+    
+    if (!clienteBDD) 
+        return res.status(404).json({ msg: `Lo sentimos, no existe el cliente con ID ${req.clienteBDD._id}` })
+
+    const verificarPassword = await clienteBDD.matchPassword(req.body.passwordactual)
+    
+    if (!verificarPassword) 
+        return res.status(404).json({ msg: "Lo sentimos, el password actual no es el correcto" })
+
+    clienteBDD.password = await clienteBDD.encrypPassword(req.body.passwordnuevo)
+    
+    await clienteBDD.save()
+    
+    res.status(200).json({ msg: "Password actualizado correctamente" })
 }
 
 
 // Recuperar contrseña
+
 const recuperarPassword = async (req, res) => {
      // Datos del request
     const { email } = req.body
@@ -152,10 +172,10 @@ const recuperarPassword = async (req, res) => {
     if (!clienteBDD) 
         return res.status(404).json({ msg: "Lo sentimos, el email no está registrado" })
 
-    // Interaccion con l abase de datos
+    // Interaccion con la base de datos
     const token = clienteBDD.crearToken()
-    clienteBDD.token = token;
-    await sendMailToRecoveryPassword(email, token)
+    clienteBDD.token = token
+    await sendMailToRecoveryPassword(email, token, false)
     await clienteBDD.save();
     
     res.status(200).json({ msg: "Revisa tu correo electrónico para restablecer tu cuenta" })
@@ -171,7 +191,7 @@ const comprobarTokenPassword = async (req, res) => {
     // Comprobar si el token es válido
     const clienteBDD = await Cliente.findOne({  token: req.params.token })
     if (clienteBDD?.token !== req.params.token) 
-        return res.status(404).json({ msg: "Lo sentimos, el token no es válido o ha expirado" })
+        return res.status(404).json({ msg: "Lo sentimos, el token no es válido jjxd" })
 
     await clienteBDD.save()
 
@@ -210,5 +230,6 @@ export {
     eliminarCliente,
     recuperarPassword,
     comprobarTokenPassword,
-    nuevoPassword
+    nuevoPassword,
+    actualizarPassword
 }

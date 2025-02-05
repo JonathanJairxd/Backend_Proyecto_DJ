@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { actualizarCliente, comprobarTokenPassword, detalleCliente, eliminarCliente, listarClientes, loginCliente, nuevoPassword, perfilCliente, recuperarPassword, registrarCliente } from '../controllers/cliente_controller.js';
+import { actualizarCliente, actualizarPassword, comprobarTokenPassword, detalleCliente, eliminarCliente, listarClientes, loginCliente, nuevoPassword, perfilCliente, recuperarPassword, registrarCliente } from '../controllers/cliente_controller.js';
 import verificarAutenticacion from '../middlewares/autenticacion.js';
 const router = Router()
 
@@ -10,6 +10,9 @@ router.get('/cliente/listar', verificarAutenticacion, listarClientes)
 router.get('/cliente/listar/:id', verificarAutenticacion, detalleCliente)
 router.put('/cliente/actualizar/:id', verificarAutenticacion, actualizarCliente)
 router.delete('/cliente/eliminar/:id', verificarAutenticacion, eliminarCliente)
+
+//Cambio de contraseña
+router.put('/cliente/actualizarpassword', verificarAutenticacion, actualizarPassword)
 
 // Recuperar contraseña
 router.post('/cliente/recuperar-password', recuperarPassword)
