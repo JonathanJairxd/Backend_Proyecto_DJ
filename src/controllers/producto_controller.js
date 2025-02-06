@@ -2,7 +2,7 @@ import Producto from "../models/Producto.js"
 import mongoose from "mongoose"
 
 const registrarProducto = async (req, res) => {
-    const { nombreDisco, artista, precio, genero, stock } = req.body;
+    const { nombreDisco, artista, precio, genero, stock } = req.body
 
     // Validar que no haya campos vacios
     if (Object.values(req.body).includes("")) {
@@ -47,7 +47,7 @@ const listarProducto = async (req, res) => {
 }
 
 const detalleProducto = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params
 
     // Verificar si el id es valido
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -59,7 +59,7 @@ const detalleProducto = async (req, res) => {
 
     // // Verificar si el producto existe en la base de datos () si se encontro
     if (!producto) {
-        return res.status(404).json({ msg: `Producto con ID: ${id} no encontrado o ya fue eliminado` });
+        return res.status(404).json({ msg: `Producto con ID: ${id} no encontrado o ya fue eliminado` })
     }
 
     // Detalles del producto

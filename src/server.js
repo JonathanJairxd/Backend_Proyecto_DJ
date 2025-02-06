@@ -4,11 +4,12 @@ import dotenv from 'dotenv'
 import cors from 'cors';
 
 // Se importan las rutas del administrador
-import routerAdministrador from './routers/administrador_routes.js'
+import routerAdministrador from './routers/administrador_routes.js';
 
-import routerClientes from './routers/cliente_routes.js'
+import routerClientes from './routers/cliente_routes.js';
 
-import routerProducto from './routers/producto_routes.js'
+import routerProducto from './routers/producto_routes.js';
+import routerVenta from './routers/venta_routes.js';
 
 
 // Inicializaciones
@@ -39,6 +40,9 @@ app.use('/api',routerClientes)
 
 // Ruta del producto
 app.use('/api',routerProducto)
+
+// Ruta de la venta
+app.use('/api',routerVenta)
 
 
 // Rutas no encontradas
