@@ -78,6 +78,8 @@ const perfilCliente = (req, res) => {
     if (!req.clienteBDD) {
         return res.status(404).json({ msg: "Cliente no encontrado" });
     }
+    delete req.clienteBDD.token
+    delete req.clienteBDD.confirmEmail
     delete req.clienteBDD.createdAt
     delete req.clienteBDD.updatedAt
     delete req.clienteBDD.__v
@@ -87,7 +89,7 @@ const perfilCliente = (req, res) => {
 
 const listarClientes = async (req, res) => {
     try {
-        const clientes = await Cliente.find({ estado: true }).select("-createdAt -updatedAt -__v -password")
+        const clientes = await Cliente.find({ status: true }).select("-createdAt -updatedAt -__v -password -token -confirmEmail -direccion -ciudad")
 
         res.status(200).json(clientes);
     } catch (error) {
@@ -102,7 +104,7 @@ const detalleCliente = async(req,res)=>{
         return res.status(404).json({ msg: `Lo sentimos, no existe el cliente con ID: ${id}` });
     }
     
-    const cliente = await Cliente.findById(id).select("-createdAt -updatedAt -__v")
+    const cliente = await Cliente.findById(id).select("-createdAt -updatedAt -__v -token -confirmEmail -password")
     
     res.status(200).json(cliente)
 }
@@ -116,8 +118,14 @@ const eliminarCliente = async (req,res)=>{
     if( !mongoose.Types.ObjectId.isValid(id) ) 
         return res.status(404).json({msg:`Lo sentimos, no existe el cliente con ID: ${id}`})
     
+    // Verificar si el producto existe en la base de datos (si ya fue eliminado)
+    const cliente = await Cliente.findById(id);
+    if (!cliente) {
+        return res.status(404).json({ msg: `El producto con ID: ${id} ya ha sido eliminado` });
+    }
+
     
-    await Cliente.findByIdAndUpdate(id, { estado: false })
+    await Cliente.findByIdAndUpdate(id, { status: false })
     
     res.status(200).json({ msg: "Cuenta eliminada exitosamente" })
 }
@@ -132,6 +140,12 @@ const actualizarCliente = async(req,res)=>{
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(404).json({ msg: `Lo sentimos, no existe el cliente con ID: ${id}` })
     }
+    
+    // Verificar si el cliente existe en la base de datos
+        const cliente = await Cliente.findById(id);
+        if (!cliente) {
+            return res.status(404).json({ msg: `Cliente con ID: ${id} no encontrado o ya fue eliminado` })
+        }
     
     await Cliente.findByIdAndUpdate(id, req.body)
     
